@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -80,9 +81,11 @@ public class MainFrame_SR extends JFrame implements ActionListener {
                 break;
             case "baocun":
                 System.out.println("baocun");
+                save();
                 break;
             case "daoru":
                 System.out.println("daoru");
+                daoru();
                 break;
             case "qiuhe":
                 System.out.println("qiuhe");
@@ -91,6 +94,71 @@ public class MainFrame_SR extends JFrame implements ActionListener {
                 System.out.println("renshu");
                 break;
 
+        }
+    }
+
+    private void daoru(){
+        JFileChooser chooser = new JFileChooser();
+        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = chooser.showOpenDialog(null);
+        File parent = chooser.getSelectedFile();
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        try{
+            fis = new FileInputStream(parent);
+            ois = new ObjectInputStream(fis);
+            Chess [] chesses = (Chess []) ois.readObject();
+            gp.setChesses(chesses);
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            if(ois != null){
+                try{
+                    ois.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    /**
+     * 保存棋谱的方法
+     */
+    private void save(){
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = chooser.showOpenDialog(null);
+        File parent = chooser.getSelectedFile();
+        System.out.println("parent-->"+parent);
+        //创建文件
+        String path = parent.getAbsolutePath() + File.separator +
+                System.currentTimeMillis()+".txt";
+        File file = new File(path);
+        if(!file.exists()){
+            try{
+                file.createNewFile();
+            }catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+        try {
+            //创建文件输出流对象
+            fos = new FileOutputStream(file);
+            //创建文件对象输出流对象
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(gp.getChesses());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }finally{
+            if(oos != null){
+                try {
+                    oos.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 }

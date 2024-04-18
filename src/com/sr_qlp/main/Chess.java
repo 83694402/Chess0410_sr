@@ -3,12 +3,13 @@ package com.sr_qlp.main;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * @author sr
  * * @date Create at 14:33 2024/4/12
  */
-public abstract class Chess {
+public abstract class Chess implements Serializable {
     //棋子边距
     private static final int MARGIN = 20;
     //棋子大小

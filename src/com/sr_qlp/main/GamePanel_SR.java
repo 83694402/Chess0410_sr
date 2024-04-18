@@ -14,7 +14,17 @@ import java.util.LinkedList;
  * * @date 12:02 2024/4/10
  */
 public class GamePanel_SR extends JPanel {
-    Chess [] chesses = new Chess[32];
+    private Chess [] chesses = new Chess[32];
+
+    public Chess[] getChesses() {
+        return chesses;
+    }
+
+    public void setChesses(Chess[] chesses) {
+        this.chesses = chesses;
+        repaint();
+    }
+
     private Chess selectedChess;
     //现在的阵营编号
     private int curPlayer = 0;
