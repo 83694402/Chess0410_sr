@@ -161,8 +161,9 @@ public class GamePanel_SR extends JPanel {
 
     /*
     *
-    * 实现悔棋功能
+    * 实现悔棋功能aa
      */
+
     public void huiqi(){
         Record record = huiqiList.pollLast();
         //将操作棋子的坐标修改回去
