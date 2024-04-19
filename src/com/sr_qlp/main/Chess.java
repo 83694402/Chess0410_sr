@@ -329,4 +329,49 @@ public abstract class Chess implements Serializable {
                 ", suffix='" + suffix + '\'' +
                 '}';
     }
+
+    public boolean isJiangJunOpponent(Chess selectedChess,GamePanel_SR gp){
+        int curPlayer = gp.getCurPlayer();
+        //取得对方boss
+        Chess boss = null;
+        for (Chess items:gp.getChesses()){
+            if(items.name.equals("boss") && items.getPlayer() != curPlayer){
+                boss = items;
+                break;
+            }
+        }
+        System.out.println("对方的boss为："+boss.getP());
+        //调用刚刚走的棋子的isAbleMove()方法，看看能否到达对方boss的位置
+        if(selectedChess.isAbleMove(boss.getP(),gp)){
+            System.out.println("将军！");
+            System.out.println("将军！");
+            System.out.println("将军！");
+            System.out.println("将军！");
+            return true;
+        }
+
+        return false;
+    }
+    public static boolean isJiangJunMy(GamePanel_SR gp){
+        //方法在走棋之后调用
+        //获取当前选手的阵营
+        int curPlayer =1 - gp.getCurPlayer();
+        //取得自己的boss
+        Chess boss = null;
+        for (Chess items:gp.getChesses()){
+            if(items != null && items.name.equals("boss") && items.getPlayer() == curPlayer){
+                boss = items;
+                break;
+            }
+        }
+        //遍历对方棋子，看能否到达己方boss
+        for (Chess items:gp.getChesses()){
+            if(items != null && items.getPlayer() != curPlayer && items.isAbleMove(boss.getP(),gp)){
+                System.out.println("您不能这样走！！！");
+                gp.huiqi();
+                return true;
+            }
+        }
+        return false;
+    }
 }

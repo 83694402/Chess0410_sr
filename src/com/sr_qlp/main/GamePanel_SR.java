@@ -28,6 +28,11 @@ public class GamePanel_SR extends JPanel {
     private Chess selectedChess;
     //现在的阵营编号
     private int curPlayer = 0;
+    //返回现在的阵营编号
+    public int getCurPlayer() {
+        return curPlayer;
+    }
+
     //Java集合的使用
     private LinkedList<Record> huiqiList = new LinkedList();
     //提示label
@@ -55,11 +60,14 @@ public class GamePanel_SR extends JPanel {
                 //第一次选择棋子
                 if(selectedChess == null) {
                     selectedChess = c;
+                    hintLabel.setText(
+                            (curPlayer == 0 ? "红方走":"黑方走"));
                     if (selectedChess != null && c.getPlayer() != curPlayer){
                         selectedChess = null;
                         hintLabel.setText("<html>"+"不能选择对方的棋子"+"<br/>"+
                                 (curPlayer == 0 ? "红方走":"黑方走")+"</html>");
                     }
+
                     System.out.println("第一次选择棋子");
                 }else{
                     //重新选择，移动，吃子
@@ -81,7 +89,12 @@ public class GamePanel_SR extends JPanel {
                                 record.setEatedChess(c);
                                 huiqiList.add(record);
                                 selectedChess.setP(p);
+                                selectedChess.isJiangJunOpponent(selectedChess,GamePanel_SR.this);
                                 overMyTurn();
+                                Chess.isJiangJunMy(GamePanel_SR.this);
+                            }else{
+                                hintLabel.setText("<html>"+"不能选择对方的棋子"+"<br/>"+
+                                        (curPlayer == 0 ? "红方走":"黑方走")+"</html>");
                             }
 
                         }
@@ -96,7 +109,11 @@ public class GamePanel_SR extends JPanel {
                             record.setEatedChess(c);
                             huiqiList.add(record);
                             selectedChess.setP(p);
+                            selectedChess.isJiangJunOpponent(selectedChess,GamePanel_SR.this);
+
                             overMyTurn();
+                            Chess.isJiangJunMy(GamePanel_SR.this);
+
                         }
 
                     }
