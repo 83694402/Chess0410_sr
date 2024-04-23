@@ -1,12 +1,15 @@
-package com.sr_qlp.main;
+package com.sr_qlp.main.model;
+
+import com.sr_qlp.main.game.Chess;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author sr
  * * @date Create at 9:15 2024/4/18
  */
-public class Record {
+public class Record implements Serializable {
     //记录当前的棋子
     private Chess chess;
     //记录起始位置

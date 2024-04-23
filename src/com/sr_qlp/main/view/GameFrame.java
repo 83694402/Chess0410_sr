@@ -1,21 +1,50 @@
-package com.sr_qlp.main;
+package com.sr_qlp.main.view;
+
+import com.sr_qlp.main.game.Chess;
+import com.sr_qlp.main.game.GamePanel_SR;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.ArrayList;
+import java.net.Socket;
 
 /**
  * @author sr
  * * @date 2024/4/10
  */
-public class MainFrame_SR extends JFrame implements ActionListener {
+public class GameFrame extends JFrame implements ActionListener {
     //gamePanel
-    private GamePanel_SR gp = new GamePanel_SR();
+    private GamePanel_SR gp = null;
+    private int player;
+    private String account;
+    private Socket socket;
+    private boolean isLocked = false;
+    private String to;//对手名称
 
-    public MainFrame_SR(){
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+        gp.setLocked(locked);
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public void setPlayer(int player){
+        this.player = player;
+        gp.setCurPlayer(player);
+    }
+    public GameFrame(Socket socket, String account,String to){
+        this.socket = socket;
+        this.account = account;
+        this.to = to;
+        setTitle("中国象棋"+account);
         //设置窗口的大小
         setSize(560,500);
         //JFrame默认不可见
@@ -31,6 +60,10 @@ public class MainFrame_SR extends JFrame implements ActionListener {
         //为面板设置borderlayout布局
         setLayout(new BorderLayout());
         //将游戏面板添加到窗口中
+        gp = new GamePanel_SR();
+        gp.setAccount(account);
+        gp.setSocket(socket);
+        gp.setTo(to);
         add(gp,BorderLayout.CENTER);
         //添加按钮面板
         JPanel btnPanel = new JPanel(new GridLayout(6,1));
@@ -66,7 +99,7 @@ public class MainFrame_SR extends JFrame implements ActionListener {
     public static void main(String [] args){
         //创建JFrame对象实例，名称为frm
         //JFrame frm = new JFrame();
-        new MainFrame_SR();
+//        new GameFrame();
 
     }
 
@@ -107,7 +140,7 @@ public class MainFrame_SR extends JFrame implements ActionListener {
         try{
             fis = new FileInputStream(parent);
             ois = new ObjectInputStream(fis);
-            Chess [] chesses = (Chess []) ois.readObject();
+            Chess[] chesses = (Chess []) ois.readObject();
             gp.setChesses(chesses);
         }catch(Exception e){
             e.printStackTrace();

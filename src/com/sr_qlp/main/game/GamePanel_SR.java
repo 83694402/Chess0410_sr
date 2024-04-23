@@ -1,12 +1,16 @@
-package com.sr_qlp.main;
+package com.sr_qlp.main.game;
+
+import com.sr_qlp.main.model.Message;
+import com.sr_qlp.main.model.Record;
+import com.sr_qlp.main.server.ClientThread;
+import com.sr_qlp.main.util.SocketUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
-import java.util.Arrays;
+import java.net.Socket;
 import java.util.LinkedList;
 
 /**
@@ -28,6 +32,11 @@ public class GamePanel_SR extends JPanel {
     private Chess selectedChess;
     //现在的阵营编号
     private int curPlayer = 0;
+
+    public void setCurPlayer(int curPlayer) {
+        this.curPlayer = curPlayer;
+    }
+
     //返回现在的阵营编号
     public int getCurPlayer() {
         return curPlayer;
@@ -41,6 +50,18 @@ public class GamePanel_SR extends JPanel {
         this.hintLabel = hintLabel;
     }
 
+    private void startReceive(){
+        new ClientThread(socket, new ClientThread.ResponseListener() {
+            @Override
+            public void success(Message resp) {
+                switch(resp.getType()){
+                    case MOVE:
+                        Object content = resp.getContent();
+                        if(content instanceof )
+                }
+            }
+        });
+    }
     //无参构造方法
     public GamePanel_SR(){
         createChesses();
@@ -53,6 +74,9 @@ public class GamePanel_SR extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if(isLocked) {//
+                    return ;
+                }
                 System.out.println("点击的棋子坐标为：x= " + e.getX() + "，y=" + e.getY());
                 Point p = Chess.getPointFromXY(e.getX(),e.getY());
                 System.out.println("点击的网格坐标为："+ p);
@@ -90,7 +114,7 @@ public class GamePanel_SR extends JPanel {
                                 huiqiList.add(record);
                                 selectedChess.setP(p);
                                 selectedChess.isJiangJunOpponent(selectedChess,GamePanel_SR.this);
-                                overMyTurn();
+                                overMyTurn(record);
                                 Chess.isJiangJunMy(GamePanel_SR.this);
                             }else{
                                 hintLabel.setText("<html>"+"不能选择对方的棋子"+"<br/>"+
@@ -111,7 +135,7 @@ public class GamePanel_SR extends JPanel {
                             selectedChess.setP(p);
                             selectedChess.isJiangJunOpponent(selectedChess,GamePanel_SR.this);
 
-                            overMyTurn();
+                            overMyTurn(record);
                             Chess.isJiangJunMy(GamePanel_SR.this);
 
                         }
@@ -124,7 +148,42 @@ public class GamePanel_SR extends JPanel {
             }
         });
     }
-    private void overMyTurn(){
+    private String account;
+    private String to;//对手名称
+    private Socket socket;
+    private boolean isLocked = false;
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
+    private boolean isLocked(){
+        return isLocked;
+    }
+    private void overMyTurn(Record record){
+        //发送消息给服务器，回合结束
+        Message req = new Message();
+        req.setType(Message.Type.MOVE);
+        req.setFrom(account);
+        req.setTo(to);
+        req.setContent(record);
+        SocketUtil.send(socket,req);
+        //更新对方棋盘
+        //解锁对方棋盘
+        //锁定自己的棋盘
+        //修改提示信息
         curPlayer = curPlayer == 0 ? 1:0;
         selectedChess = null;
         hintLabel.setText(curPlayer == 0 ? "红方走":"黑方走");
@@ -201,7 +260,7 @@ public class GamePanel_SR extends JPanel {
             chesses[record.getEatedChess().getInitIndex()] = record.getEatedChess();
         }
         curPlayer = 1 - record.getChess().getPlayer();
-        overMyTurn();
+        overMyTurn(record);
         //刷新棋盘
         repaint();
     }

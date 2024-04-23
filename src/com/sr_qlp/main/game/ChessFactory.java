@@ -1,4 +1,4 @@
-package com.sr_qlp.main;
+package com.sr_qlp.main.game;
 
 /**
  * @author sr
